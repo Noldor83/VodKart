@@ -150,7 +150,7 @@ table.res tr.me td{color:#ffd770}
     <div class="tag">Der Goldene Flamingo geht an</div>
     <div class="title" style="font-size:1.6em" id="winName"></div>
     <div id="satz"></div>
-    <div class="tag" id="standings" style="margin-top:.3em"></div>
+    <div id="standings" style="margin-top:.4em;font-size:1em;font-weight:bold;color:#ffd770"></div>
   </div>
   <div style="flex:1"></div>
   <div class="row" style="margin-bottom:.5em;justify-content:flex-end;width:96%"><button class="btn" id="bTitle" style="font-size:.85em">Zurück zum Titel</button></div>
@@ -789,7 +789,7 @@ const SFX={
 function engineStart(type){if(!AU.ctx)return;engineStop();const a=AU.ctx;const s=a.createBufferSource();s.buffer=AU.noise;s.loop=true;
   const f=a.createBiquadFilter();f.type=type==='broom'?'bandpass':'lowpass';f.frequency.value=type==='broom'?900:220;f.Q.value=type==='broom'?2:1;
   const g=a.createGain();g.gain.value=0;s.connect(f);f.connect(g);g.connect(AU.sfx);s.start();AU.eng={s,f,g,type}}
-function engineSet(v){if(!AU.eng)return;const e=AU.eng,t=AU.ctx.currentTime;e.g.gain.setTargetAtTime(v*(e.type==='broom'?.35:.25),t,.05);e.f.frequency.setTargetAtTime(e.type==='broom'?600+v*1400:120+v*260,t,.05)}
+function engineSet(v){if(!AU.eng)return;const e=AU.eng,t=AU.ctx.currentTime;e.g.gain.setTargetAtTime(v*(e.type==='broom'?.09:.25),t,.05);e.f.frequency.setTargetAtTime(e.type==='broom'?420+v*700:120+v*260,t,.05)}
 function engineStop(){if(AU.eng){try{AU.eng.s.stop()}catch(e){}AU.eng=null}}
 
 // ================= Daten =================
@@ -1239,6 +1239,10 @@ function buildBoronSprites(){
   SP.candle=mk(10,28,(g,R,E)=>{R(4,8,2,18,'#2a2a2a');R(1,26,8,2,'#2a2a2a');R(1,8,8,1,'#2a2a2a');for(const x of [1,4,7]){R(x,4,2,4,'#f0e8d8');E(x+1,2.5,1,1.6,'#ffb030')}});
   SP.tableseg=mk(32,14,(g,R,E)=>{R(0,4,32,6,'#f0ead8');R(0,10,32,2,'#d8d0bc');for(let x=2;x<32;x+=6)R(x,10,3,3,'#e8e0cc');R(2,12,2,2,'#4a2e18');R(28,12,2,2,'#4a2e18');
     E(8,3,4,2.5,'#8a4a1e');E(8,2.5,3,1.5,'#b06a30');R(17,0,2,4,'#d4a73a');E(18,4,2,1,'#d4a73a');E(25,3.5,3,1.5,'#c9a060');R(14,1,1,3,'#f0e8d8');E(14.5,.8,.8,1,'#ffb030')});
+  SP.tablesegs=[SP.tableseg,mk(32,14,(g,R,E)=>{R(0,4,32,6,'#f0ead8');R(0,10,32,2,'#d8d0bc');for(let x=2;x<32;x+=6)R(x,10,3,3,'#e8e0cc');
+      E(10,3,8,3.5,'#b06a3a');E(10,2,6,2.2,'#d08a50');R(17,1,2,2,'#f0a0a0');E(4,3,1.5,1,'#e8d0a0');E(24,4,4,2,'#8a5a2a');for(const [x,y,c] of [[23,2,'#c02a2a'],[25,1.5,'#e8c020'],[27,2,'#6a9a3a'],[24,.5,'#7a2a6a']])E(x,y,1.3,1.3,c)}),
+    mk(32,14,(g,R,E)=>{R(0,4,32,6,'#f0ead8');R(0,10,32,2,'#d8d0bc');for(let x=2;x<32;x+=6)R(x,10,3,3,'#e8e0cc');
+      R(3,0,4,4,'#8a5a3a');R(3,0,4,1,'#a87a4a');E(13,3,4,2,'#e8c050');E(13,2.5,3,1,'#f0d880');R(20,0,2,4,'#d4a73a');R(23,0,2,4,'#d4a73a');E(21,0,1.5,.8,'#7a1430');E(28,3.5,3,2,'#d8a040');R(27,2,2,1,'#f0f0e8')})];
   SP.winframe=mk(10,52,(g,R,E)=>{R(0,0,10,52,'#5a5048');stone(g,R,0,52,'#655a50','#584e46');R(7,6,3,40,'#3a3a5a');R(8,8,1,4,'#c0d0e8');R(8,20,1,3,'#c0d0e8')});
   SP.winTop=mk(84,18,(g,R,E)=>{R(0,0,84,8,'#5a5048');stone(g,R,0,8,'#655a50','#584e46');for(let x=2;x<82;x+=4)R(x,8,3,6+((x*7)%5),(x/4)%2?'#4a5a90':'#c06048');R(0,8,84,1,'#2a2a2a')});
   SP.trees=[mk(40,52,(g,R,E)=>{R(18,32,4,20,'#3a2614');E(20,22,16,15,'#2a4428');E(14,18,9,8,'#365430');E(26,16,8,8,'#3a5a34');E(20,12,8,7,'#42623a')}),
@@ -1423,7 +1427,7 @@ function buildWorldBoron(){
   // Waffenkammer: Waffengestelle, Schildständer, Rüstungen, Pfeilfässer
   for(let x=616;x<812;x+=22)for(const y of [133,247]){if(nearTrack(x,y,WALLW/2+3))continue;const v=((x/22)|0)%4;addDeco('arm',x,y,v===0?{img:SP.armor,ww:9,wh:19,r:0}:v===1?{img:SP.rack,ww:16,wh:18,r:0}:v===2?{img:SP.shieldStand,ww:12,wh:15,r:0}:{img:SP.arrows,ww:7,wh:10,r:0})}
   for(let y=145;y<250;y+=24)if(!nearTrack(612,y,WALLW/2+3))addDeco('arm',612,y,{img:SP.rack,ww:16,wh:18,r:0});
-  for(let i=tableA+1;i<tableB;i+=2){const s=S[i];addDeco('table',s.x,s.y,{img:SP.tableseg,ww:26,wh:10,nosh:1,r:0})}
+  for(let i=tableA+1;i<tableB;i++){const s=S[i];addDeco('table',s.x,s.y,{img:SP.tablesegs[i%3],ww:26,wh:11,nosh:1,r:0})}
   // Stadt: Fachwerkhäuser mit Fackeln
   for(let i=0;i<N;i+=9){const s=S[i];if(s.sec!=='stadt')continue;for(const sd of [1,-1]){if(rnd()<.2)continue;const off=WALLW/2+26+rnd()*8;const x=s.x+s.nx*sd*off,y=s.y+s.ny*sd*off;
     if(!freeSpot(x,y,20)||secBoron(x,y)!=='stadt')continue;const hv=SP.houses2[(rnd()*SP.houses2.length)|0];addDeco('house',x,y,{img:hv.im,ww:hv.ww,wh:hv.wh,big:1,nosh:1,r:hv.r});if(rnd()<.6)addDeco('torch',x-s.nx*sd*22,y-s.ny*sd*22,{img:SP.torch,ww:4,wh:8,el:10,nosh:1,r:0,glow:1})}}
@@ -1442,7 +1446,7 @@ function buildWorldBoron(){
   boron2World();
   // Streckenbegrenzung
   for(let i=0;i<N;i+=4){const s=S[i];const ex=s.sec==='saal'?EDGE_OFF+20:EDGE_OFF;for(const sd of [1,-1]){const x=s.x+s.nx*sd*ex,y=s.y+s.ny*sd*ex;if(matAt(x,y)!==2)continue;
-    edges.push({x,y,im:s.sec==='stadt'?'curbseg':s.sec==='kammer'?'chainseg':s.sec==='halle'?'ropeR':s.sec==='saal'?'benchseg':'fenceseg',h:s.sec==='halle'?6:s.sec==='land'?5:4})}}
+    if(s.sec==='kammer')continue;edges.push({x,y,im:s.sec==='stadt'?'curbseg':s.sec==='halle'?'ropeR':s.sec==='saal'?'benchseg':'fenceseg',h:s.sec==='halle'?6:s.sec==='land'?5:4})}}
   lamps=[];for(let i=0;i<LAMPS;i++){const l={on:1,t:0};placeLamp(l,(i+.5)/LAMPS);let tries=0;while((Math.abs(nearIdx(l.x,l.y)-rampI)<16||matAt(l.x,l.y)!==1)&&tries++<10)placeLamp(l);lamps.push(l)}
 }
 function safeOff(k,i){return (TRK===2&&i>=tableA-2&&i<=tableB+2)?((k.lane||1)>=0?1:-1)*36:0}
@@ -1549,13 +1553,13 @@ function boron2World(){
 function genMud(){const out=[];const L=[];for(let i=0;i<N;i++)if(S[i].sec==='land')L.push(i);for(const f of [.2,.38,.55,.72,.88]){const i=L[(L.length*f)|0],s=S[i];const o=(rnd()-.5)*(ROADW-30);out.push({x:s.x+s.nx*o,y:s.y+s.ny*o,r:13+rnd()*5})}return out}
 function drawMudTex(g){for(const m of B.mud){g.fillStyle='#4a3420';g.beginPath();g.ellipse(m.x,m.y,m.r+2,m.r*.8+2,.3,0,7);g.fill();g.fillStyle='#3a2a18';g.beginPath();g.ellipse(m.x,m.y,m.r,m.r*.8,.3,0,7);g.fill();g.fillStyle='rgba(120,100,70,.5)';g.fillRect(m.x-3,m.y-2,5,1)}}
 function mudAt(x,y){if(TRK!==2)return false;for(const m of B.mud)if(Math.hypot(x-m.x,y-m.y)<m.r)return true;return false}
-function throwAt(fx,fy,k,col){const t=.55;parts.push({x:fx,y:fy,h:14,vx:(k.x+Math.cos(k.angle)*k.v*t-fx)/t,vy:(k.y+Math.sin(k.angle)*k.v*t-fy)/t,vh:42,t,c:col,s:2.6})}
+function throwAt(fx,fy,k,col){const t=.55,dirt=col==='#4a3018'||col==='#6a4a24';parts.push({x:fx,y:fy,h:14,vx:(k.x+Math.cos(k.angle)*k.v*t-fx)/t,vy:(k.y+Math.sin(k.angle)*k.v*t-fy)/t,vh:42,t,c:col,s:dirt?3.6:2.6});if(dirt)parts.push({x:fx,y:fy,h:15,vx:(k.x-fx)/t*1.05,vy:(k.y-fy)/t*1.05,vh:44,t,c:'#3a2414',s:2.4})}
 function boron2Update(dt){
   if(!race.started)return;const pl=player;
   // Jubel für Vod (Rosen), Buhrufe für Zarion (faule Tomaten)
   B.throwT-=dt;if(B.throwT<=0){B.throwT=.22;for(const k of karts){if(k.id!=='vod'&&k.id!=='zarion')continue;for(const f of B.fans){if(Math.hypot(f.x-k.x,f.y-k.y)>55||Math.random()<.6)continue;
     if(k.id==='vod'&&(f.woman||Math.random()<.4)){throwAt(f.x,f.y,k,Math.random()<.8?'#c0182a':'#2a6a2a');if(k===pl&&race.t-B.cheerT>3.5){B.cheerT=race.t;SFX.cheer()}}
-    if(k.id==='zarion'){throwAt(f.x,f.y,k,'#d83a1a');if(Math.hypot(pl.x-k.x,pl.y-k.y)<120&&race.t-B.booT>3){B.booT=race.t;SFX.boo()}}}}}
+    if(k.id==='zarion'){throwAt(f.x,f.y,k,Math.random()<.5?'#4a3018':'#6a4a24');if(Math.hypot(pl.x-k.x,pl.y-k.y)<120&&race.t-B.booT>3){B.booT=race.t;SFX.boo()}}}}}
   // Pijus rülpst
   if(B.pijus&&Math.hypot(pl.x-B.pijus.x,pl.y-B.pijus.y)<70&&race.t-B.burpT>4){B.burpT=race.t;SFX.burp()}
   // Nachttopf aus dem Fenster
@@ -1568,7 +1572,7 @@ function boron2Update(dt){
   if(!B.fire&&B.fireNext<=0&&(ps==='land'||ps==='stadt')&&!race.done){B.fireNext=45+Math.random()*25;const i=(pl.idx+Math.round(Math.max(30,pl.v)*2.2/4))%N;const s=S[i];if(s.sec==='land'||s.sec==='stadt'){B.fire={i,t:0,x:s.x,y:s.y};SFX.roar()}else B.fireNext=6}
   if(B.fire){const F2=B.fire;F2.t+=dt;if(F2.t>1.6&&F2.t-dt<=1.6)SFX.fireB();if(F2.t>1.6&&F2.t<3){const s=S[F2.i];for(const k of karts)if(k.z<=0){const lat=(k.x-s.x)*s.nx+(k.y-s.y)*s.ny,lon=(k.x-s.x)*s.tx+(k.y-s.y)*s.ty;if(Math.abs(lat)<ROADW/2+4&&Math.abs(lon)<9)spin(k,1.2)}}if(F2.t>8)B.fire=null}
   // Schafherde
-  const h=B.herd;if(!h.on){h.next-=dt;if(h.next<=0&&ps==='land'){const i=(pl.idx+Math.round(Math.max(30,pl.v)*2.6/4))%N;if(S[i].sec==='land'){h.on=1;h.i=i;h.t=0;h.dir=Math.random()<.5?1:-1;SFX.baa()}else h.next=3}}
+  const h=B.herd;if(!h.on){h.next-=dt;if(h.next<=0&&ps==='land'&&(DIFF==='adv'||pl.laps>=LAPS-1)){let i=(pl.idx+Math.round(Math.max(30,pl.v)*2.6/4))%N;for(let t=0;t<40&&B.mud.some(m=>Math.hypot(m.x-S[i].x,m.y-S[i].y)<85);t++)i=(i+3)%N;if(S[i].sec==='land'&&!B.mud.some(m=>Math.hypot(m.x-S[i].x,m.y-S[i].y)<85)){h.on=1;h.i=i;h.t=0;h.dir=Math.random()<.5?1:-1;SFX.baa()}else h.next=3}}
   else{h.t+=dt;if(h.t>8){h.on=0;h.next=18+Math.random()*10}else{const s=S[h.i],L=WALLW/2+12;h.sh=[];for(let n=0;n<5;n++){const off=h.dir*lerp(-L,L,clamp((h.t-n*.35)/6.5,0,1));const lon=(n%2?5:-5)+(n-2)*2;h.sh.push({x:s.x+s.nx*off+s.tx*lon,y:s.y+s.ny*off+s.ty*lon})}
     for(const k of karts)for(const q of h.sh)if(k.z<=0&&Math.hypot(k.x-q.x,k.y-q.y)<7&&k.spinT<=0&&k.immT<=0){spin(k,.8);k.v*=.5;if(nearP(k))SFX.baa()}}}
 }
@@ -1851,7 +1855,7 @@ function renderPreview(t){if(TRK===2)return renderPreviewBoron(t);if(TRK===1)ret
 let pod={win:[],conf:[]};
 function renderPodium(t){if(TRK===2)sceneBurghof(t);else sceneBg();
   const bx=[[160,140,80,'#d9a52a','1'],[80,155,80,'#c0c4cc','2'],[240,165,80,'#b07040','3']];
-  bx.forEach(([x,y,w,c,n],i)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,SH-y);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x,y,w,3);ctx.fillStyle='#3a1a0a';ctx.font='bold 16px Georgia';ctx.textAlign='center';ctx.fillText(n,x+w/2,y+20);
+  bx.forEach(([x,y,w,c,n],i)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,SH-y);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x,y,w,3);ctx.fillStyle='#3a1a0a';ctx.font='bold 16px Georgia';ctx.textAlign='center';ctx.fillText(n,x+w/2,y+20);{const kk=pod.win[i];if(kk&&cup.pts){ctx.font='bold 11px Georgia';ctx.fillText((cup.pts[kk.id]||0)+' Punkte',x+w/2,y+36)}}
     const k=pod.win[i];if(k){const im=SP[k.id].side[(t*3|0)%2];const j=Math.abs(Math.sin(t*5+i))*6*(i===0?1.5:1);ctx.drawImage(im,x+8,y-44-j,64,44)}});
   const fans=[[SP.abdulon,8,135,36,44],[SP.hauter,48,140,24,44],[SP.jashild,330,140,24,44],[SP.donation,362,138,24,44]];if(TRK===2){fans.push([SP.pijus,4,180,40,42],[SP.fieso,350,176,44,52])}
   fans.forEach(([s,x,y,w,h],i)=>{const fr=s.length===3?s[(t*4|0)%2?0:2]:s[((t*4+i)|0)%2];const j=Math.abs(Math.sin(t*6+i*1.3))*5;ctx.drawImage(fr,x,y-j,w,h)});
@@ -1910,7 +1914,7 @@ function showResults(){finishOthers();const ord=ranking();
   pod.raceWin=ord[0];pod.conf=[];pod.cupKarts=karts.slice();SFX.fanfare();setState('results')}
 function cupOrder(){return pod.cupKarts.slice().sort((a,b)=>(cup.pts[b.id]||0)-(cup.pts[a.id]||0)||(cup.wins[b.id]||0)-(cup.wins[a.id]||0)||cup.last[a.id]-cup.last[b.id])}
 function showPodium(){const o=cupOrder();pod.win=o.slice(0,3);const w=pod.win[0];$('winName').textContent=w.name;$('satz').textContent=w.d.satz;
-  $('standings').textContent=o.map(k=>k.name+' '+cup.pts[k.id]).join(' · ');pod.conf=[];setState('podium');SFX.fanfare();SFX.cheer()}
+  $('standings').textContent='Gesamtwertung: '+o.map((k,i)=>(i+1)+'. '+k.name+' '+(cup.pts[k.id]||0)+' P.').join(' · ');pod.conf=[];setState('podium');SFX.fanfare();SFX.cheer()}
 function showPreview(){$('pvTag').textContent=(single>=0?'Einzelrennen':'Rennen '+(cup.i+1)+' von '+TRACKS.length)+' · '+(DIFF==='adv'?'Fortgeschritten':'Anfänger');$('pvName').textContent=TRACKS[TRK].name;$('pvTxt').textContent=TRACKS[TRK].txt;setState('preview')}
 function nextRace(){if(single>=0||cup.i>=TRACKS.length-1){showPodium();return}cup.i++;loadTrack(cup.i);showPreview()}
 
