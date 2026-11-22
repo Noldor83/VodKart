@@ -56,8 +56,8 @@ html,body{margin:0;height:100%;background:#120c08;overflow:hidden;touch-action:n
 #touch{position:absolute;inset:0;display:none;pointer-events:none}
 .tb{position:absolute;pointer-events:auto;border:.12em solid rgba(255,220,140,.55);background:rgba(20,10,6,.35);color:#ffe8b0;border-radius:1em;display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:bold;touch-action:none}
 .tb.on{background:rgba(232,184,74,.45)}
-#tL{left:2%;bottom:5%;width:15%;height:30%}
-#tR{left:19%;bottom:5%;width:15%;height:30%}
+#tL{left:2%;bottom:5%;width:16%;height:38%}
+#tR{left:19.5%;bottom:5%;width:16%;height:38%}
 #tG{right:2%;bottom:5%;width:18%;height:46%;font-size:1.2em}
 #tB{right:21%;bottom:5%;width:12%;height:22%;font-size:.9em}
 table.res{border-collapse:collapse;font-size:.95em;margin:.3em auto}
@@ -1927,8 +1927,20 @@ addEventListener('keyup',e=>{keys[e.code]=false});
 addEventListener('touchstart',()=>{touchMode=true},{passive:true,capture:true});
 let lastGas=0;
 function bindHold(id,key){const el=$(id);const on=e=>{e.preventDefault();tin[key]=1;el.classList.add('on');if(key==='g'){const n=performance.now();if(n-lastGas<330&&state==='race'&&player&&player.item){useItem(player);lastGas=0}else lastGas=n}};const off=e=>{e.preventDefault();tin[key]=0;el.classList.remove('on')};
-  el.addEventListener('pointerdown',on);el.addEventListener('pointerup',off);el.addEventListener('pointercancel',off);el.addEventListener('pointerleave',off)}
+  // Maus: Zeigerereignisse; Finger: eigene Auswertung unten (robust gegen Verrutschen und Mehrfingerbedienung)
+  el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')on(e)});['pointerup','pointercancel','pointerleave'].forEach(t=>el.addEventListener(t,e=>{if(e.pointerType==='mouse')off(e)}))}
 bindHold('tL','l');bindHold('tR','r');bindHold('tB','b');bindHold('tG','g');
+// Touch: jeder Finger zählt für den Knopf, über dem er gerade liegt – mit Toleranzrand; Wischen von ◀ nach ▶ wechselt die Richtung
+const TKEYS={l:'tL',r:'tR',b:'tB',g:'tG'};
+function touchKeyAt(x,y){const pad=22;let best=null,bd=1e9;for(const k in TKEYS){const r=$(TKEYS[k]).getBoundingClientRect();if(!r.width)continue;
+  if(x>=r.left-pad&&x<=r.right+pad&&y>=r.top-pad&&y<=r.bottom+pad){const d=Math.hypot(x-(r.left+r.width/2),y-(r.top+r.height/2));if(d<bd){bd=d;best=k}}}return best}
+function touchUpdate(e,isStart){if(state!=='race')return;let any=false;const now={l:0,r:0,b:0,g:0};
+  for(const t of e.touches){const k=touchKeyAt(t.clientX,t.clientY);if(k){now[k]=1;any=true}}
+  if(isStart)for(const t of e.changedTouches){const k=touchKeyAt(t.clientX,t.clientY);if(k==='g'){const n=performance.now();if(n-lastGas<330&&player&&player.item){useItem(player);lastGas=0}else lastGas=n}if(k)any=true}
+  if(now.l&&now.r)now.r=0;for(const k in TKEYS){tin[k]=now[k];$(TKEYS[k]).classList.toggle('on',!!now[k])}
+  if(any&&e.cancelable)e.preventDefault()}
+addEventListener('touchstart',e=>touchUpdate(e,true),{passive:false});addEventListener('touchmove',e=>touchUpdate(e,false),{passive:false});
+addEventListener('touchend',e=>touchUpdate(e,false),{passive:false});addEventListener('touchcancel',e=>touchUpdate(e,false),{passive:false});
 function titleTap(){auInit();tafelI=0;showTafel();setState('intro')}
 $('sTitle').addEventListener('pointerdown',titleTap);
 $('bNext').onclick=()=>{auInit();if(tafelI<TAFELN.length-1){tafelI++;showTafel()}else setState('menu')};
